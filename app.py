@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import qrcode
 import uuid
-import os
 
 app = Flask(__name__)
 
@@ -26,15 +25,20 @@ def generate_qr():
 
     img = qr.make_image(fill_color="black", back_color="white")
 
-    # static の絶対パスで保存（Render でも確実に動く）
-    save_path = os.path.join(app.static_folder, f"{ticket_id}.png")
+    # Render 本番環境で唯一書き込み可能な /tmp に保存
+    save_path = f"/tmp/{ticket_id}.png"
     img.save(save_path)
 
     return jsonify({
         "ticket_id": ticket_id,
         "seller_id": seller_id,
-        "qr_url": f"static/{ticket_id}.png"
+        "qr_url": f"/qr/{ticket_id}.png"
     })
+
+# /tmp の画像を公開するルート
+@app.route("/qr/<filename>")
+def get_qr(filename):
+    return send_file(f"/tmp/{filename}", mimetype="image/png")
 
 if __name__ == "__main__":
     app.run()
