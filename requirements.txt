@@ -1,2 +1,4 @@
-Flask==2.3.2
-gunicorn==21.2.0
+Flask
+gunicorn
+qrcode==7.4.2
+Pillow==10.0.0
