@@ -1,6 +1,13 @@
+from flask import Flask, request, jsonify
+import qrcode
+import uuid
 import os
 
-# 省略…
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "MatchPoint API is running"
 
 @app.route("/generate_qr", methods=["POST"])
 def generate_qr():
@@ -19,7 +26,7 @@ def generate_qr():
 
     img = qr.make_image(fill_color="black", back_color="white")
 
-    # ★ static の絶対パスを使う（Render でも確実に動く）
+    # static の絶対パスで保存（Render でも確実に動く）
     save_path = os.path.join(app.static_folder, f"{ticket_id}.png")
     img.save(save_path)
 
@@ -28,3 +35,6 @@ def generate_qr():
         "seller_id": seller_id,
         "qr_url": f"static/{ticket_id}.png"
     })
+
+if __name__ == "__main__":
+    app.run()
