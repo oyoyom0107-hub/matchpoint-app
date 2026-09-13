@@ -3,4 +3,4 @@ gunicorn
 qrcode
 Pillow
 python-dotenv
-supabase-py
+supabase
