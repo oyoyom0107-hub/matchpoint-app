@@ -1,8 +1,24 @@
 from flask import Flask, request, jsonify, send_file
 import qrcode
 import uuid
+import os
+
+# .env を読み込む
+from dotenv import load_dotenv
+load_dotenv()
+
+# Supabase クライアント（Anon Key を使う）
+from supabase import create_client
+
+supabase = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_ANON_KEY")   # ← ここだけでOK
+)
 
 app = Flask(__name__)
+
+# Supabase 接続テスト
+print(supabase.table("tickets").select("*").execute())
 
 @app.route("/")
 def index():
@@ -35,7 +51,6 @@ def generate_qr():
         "qr_url": f"/qr/{ticket_id}.png"
     })
 
-# /tmp の画像を公開するルート
 @app.route("/qr/<filename>")
 def get_qr(filename):
     return send_file(f"/tmp/{filename}", mimetype="image/png")
